@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我喜欢你</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            color: #d42e73;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        .heart {
+            color: #ff4d94;
+            display: inline-block;
+            animation: heartbeat 1.2s infinite;
+        }
+        
+        p {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #yesBtn {
+            background: linear-gradient(to right, #ff4d94, #ff2b6b);
+            color: white;
+        }
+        
+        #noBtn {
+            background: linear-gradient(to right, #36d1dc, #5b86e5);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #noBtn.running {
+            position: relative;
+            animation: runAway 0.5s linear;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .photo-frame {
+            width: 200px;
+            height: 200px;
+            border: 8px solid #ff4d94;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 20px auto;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .music-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .music-control i {
+            font-size: 20px;
+            color: #ff4d94;
+        }
+        
+        /* 花瓣效果 */
+        .petal {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50% 50% 0 50%;
+            z-index: 1;
+            opacity: 0.7;
+        }
+        
+        /* 动画 */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes runAway {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-30px); }
+            50% { transform: translateX(30px); }
+            75% { transform: translateX(-40px); }
+            100% { transform: translateX(100vw); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 500px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1.2rem; }
+            .container { padding: 20px 15px; }
+            .photo-frame { width: 150px; height: 150px; }
+            button { padding: 12px 25px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 音乐控制 -->
+    <div class="music-control" id="musicControl">
+        <i>♪</i>
+    </div>
+    
+    <!-- 主容器 -->
+    <div class="container" id="mainContainer">
+        <h1><span class="heart">❤</span> 我喜欢你 <span class="heart">❤</span></h1>
+        
+        <div class="photo-frame">
+            <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=500" alt="Special Someone">
+        </div>
+        
+        <p>从遇见你的那一刻起，我的心就被你偷走了</p>
+        <p>你的笑容是我每天最期待的风景</p>
+        <p>你愿意和我一起创造更多美好回忆吗？</p>
+        
+        <div class="buttons">
+            <button id="yesBtn">我愿意</button>
+            <button id="noBtn">考虑一下</button>
+        </div>
+    </div>
+    
+    <!-- 成功页面 -->
+    <div class="container hidden" id="successContainer">
+        <h1><span class="heart">❤</span> 太棒了！ <span class="heart">❤</span></h1>
+        
+        <div class="photo-frame">
+            <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?q=80&w=500" alt="Together">
+        </div>
+        
+        <div class="result">
+            <p>我就知道你会同意的！🎉</p>
+            <p>从今天起，你就是我的全世界</p>
+            <p>让我们开始这段美好的旅程吧~</p>
+        </div>
+        
+        <p style="margin-top: 20px;">❤️ 永远爱你 ❤️</p>
+    </div>
+    
+    <!-- 音频元素 -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const musicControl = document.getElementById('musicControl');
+            const bgMusic = document.getElementById('bgMusic');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const mainContainer = document.getElementById('mainContainer');
+            const successContainer = document.getElementById('successContainer');
+            
+            // 创建花瓣
+            function createPetals() {
+                const petalCount = 25;
+                for (let i = 0; i < petalCount; i++) {
+                    const petal = document.createElement('div');
+                    petal.classList.add('petal');
+                    
+                    // 随机大小
+                    const size = Math.random() * 15 + 5;
+                    petal.style.width = `${size}px`;
+                    petal.style.height = `${size}px`;
+                    
+                    // 随机位置
+                    petal.style.left = `${Math.random() * 100}vw`;
+                    petal.style.top = `-${size}px`;
+                    
+                    // 随机颜色
+                    const colors = ['#ffb6c1', '#ffc0cb', '#ffd1dc', '#ff9a9e'];
+                    petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // 随机动画
+                    const duration = Math.random() * 10 + 10;
+                    const delay = Math.random() * 5;
+                    petal.style.animation = `float ${duration}s linear ${delay}s infinite`;
+                    
+                    document.body.appendChild(petal);
+                }
+            }
+            
+            // 音乐控制
+            musicControl.addEventListener('click', function() {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    musicControl.innerHTML = '<i>♪</i>';
+                } else {
+                    bgMusic.pause();
+                    musicControl.innerHTML = '<i>🔇</i>';
+                }
+            });
+            
+            // 同意按钮
+            yesBtn.addEventListener('click', function() {
+                mainContainer.classList.add('hidden');
+                successContainer.classList.remove('hidden');
+                
+                // 添加庆祝效果
+                for(let i=0; i<50; i++) {
+                    setTimeout(() => {
+                        createHeart();
+                    }, i * 100);
+                }
+            });
+            
+            // 拒绝按钮
+            noBtn.addEventListener('click', function() {
+                // 按钮逃跑效果
+                noBtn.classList.add('running');
+                
+                // 3秒后重置按钮
+                setTimeout(() => {
+                    noBtn.classList.remove('running');
+                    noBtn.style.transform = 'translateX(0)';
+                    
+                    // 随机改变按钮位置
+                    const x = Math.random() * 50 - 25;
+                    const y = Math.random() * 50 - 25;
+                    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+                    
+                    // 改变按钮文本
+                    const texts = ["再想想", "你确定吗", "选另一个", "给我个机会", "别这样嘛"];
+                    noBtn.textContent = texts[Math.floor(Math.random() * texts.length)];
+                }, 500);
+            });
+            
+            // 创建心形庆祝效果
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.style.position = 'fixed';
+                heart.style.fontSize = `${Math.random() * 30 + 20}px`;
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.top = '100vh';
+                heart.style.zIndex = '100';
+                heart.style.opacity = Math.random() * 0.5 + 0.5;
+                heart.style.animation = `float ${Math.random() * 5 + 5}s linear`;
+                
+                document.body.appendChild(heart);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    heart.remove();
+                }, 6000);
+            }
+            
+            // 初始化花瓣
+            createPetals();
+            
+            // 在微信中自动播放音乐的尝试
+            document.addEventListener('WeixinJSBridgeReady', function() {
+                bgMusic.play();
+            }, false);
+            
+            // 用户交互后尝试播放音乐
+            document.body.addEventListener('touchstart', function initMusic() {
+                if (bgMusic.paused) {
+                    bgMusic.play().catch(e => console.log('Autoplay prevented:', e));
+                }
+                document.body.removeEventListener('touchstart', initMusic);
+            });
+        });
+    </script>
+</body>
+</html>
